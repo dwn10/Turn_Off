@@ -39,8 +39,10 @@ def get_system_commands():
             shutdown_cmd = lambda t: f'systemctl poweroff --timer={t}s'
             cancel_cmd = 'systemctl cancel --type=poweroff'
         else:
-            shutdown_cmd = lambda t: f'shutdown -h +{t//60}'
-            cancel_cmd = 'pkill shutdown'
+            # Usar el comando shutdown con PID file para poder cancelarlo
+            pid_file = '/tmp/power_manager_shutdown.pid'
+            shutdown_cmd = lambda t: f'shutdown -h +{t//60} & echo $! > {pid_file}'
+            cancel_cmd = f'if [ -f {pid_file} ]; then kill $(cat {pid_file}); rm {pid_file}; fi'
 
         return {
             'shutdown': shutdown_cmd,
