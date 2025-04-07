@@ -1,0 +1,19 @@
+[server]
+enableXsrfProtection = true
+enableCORS = false
+maxUploadSize = 5
+address = "localhost"
+port = 8501
+
+[browser]
+gatherUsageStats = false
+serverAddress = "localhost"
+
+[theme]
+primaryColor = "#1f77b4"
+backgroundColor = "#f8f9fa"
+secondaryBackgroundColor = "#ffffff"
+textColor = "#333333"
+
+[logger]
+level = "warning"
