@@ -11,6 +11,7 @@ import streamlit as st
 import subprocess
 import time
 import platform
+import os
 from datetime import datetime, timedelta
 
 def get_system_commands():
@@ -24,9 +25,18 @@ def get_system_commands():
             'cancel': 'shutdown /a'
         }
     elif system == 'linux':
+        # Intentar detectar el método de suspensión disponible
+        suspend_command = 'pm-suspend'
+        if os.path.exists('/usr/sbin/pm-suspend'):
+            suspend_command = 'pm-suspend'
+        elif os.path.exists('/usr/bin/systemctl'):
+            suspend_command = 'systemctl suspend'
+        else:
+            suspend_command = 'echo mem > /sys/power/state'
+
         return {
             'shutdown': lambda t: f'shutdown -h +{t//60}',
-            'hibernate': lambda _: 'systemctl hibernate',
+            'hibernate': lambda _: suspend_command,
             'cancel': 'shutdown -c'
         }
     elif system == 'darwin':  # macOS
