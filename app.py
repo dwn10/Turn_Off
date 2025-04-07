@@ -34,10 +34,18 @@ def get_system_commands():
         else:
             suspend_command = 'echo mem > /sys/power/state'
 
+        # Detectar el comando de apagado disponible
+        if os.path.exists('/usr/bin/systemctl'):
+            shutdown_cmd = lambda t: f'systemctl poweroff --timer={t}s'
+            cancel_cmd = 'systemctl cancel --type=poweroff'
+        else:
+            shutdown_cmd = lambda t: f'shutdown -h +{t//60}'
+            cancel_cmd = 'pkill shutdown'
+
         return {
-            'shutdown': lambda t: f'shutdown -h +{t//60}',
+            'shutdown': shutdown_cmd,
             'hibernate': lambda _: suspend_command,
-            'cancel': 'shutdown -c'
+            'cancel': cancel_cmd
         }
     elif system == 'darwin':  # macOS
         return {
