@@ -393,7 +393,16 @@ def actualizar_contador():
             secs = int(tiempo_restante.total_seconds() % 60)
             return f'{mins:02d}:{secs:02d}'
         else:
+            # Ejecutar la acción cuando el contador llega a cero
+            system_commands = get_system_commands()
+            if system_commands:
+                if st.session_state.hibernar:
+                    execute_command(system_commands['hibernate'](0))
+                else:
+                    execute_command(system_commands['shutdown'](0))
             st.session_state.contador_activo = False
+            st.session_state.tiempo_final = None
+            st.session_state.hibernar = False
             return '00:00'
     return '--:--'
 
