@@ -391,20 +391,20 @@ def actualizar_contador():
         if tiempo_restante.total_seconds() > 0:
             mins = int(tiempo_restante.total_seconds() // 60)
             secs = int(tiempo_restante.total_seconds() % 60)
-            return f'{mins:02d}:{secs:02d}'
+            return f'{mins:02d}:{secs:02d}', tiempo_restante.total_seconds()
         else:
-            # Ejecutar la acción cuando el contador llega a cero
+            # Tiempo llegó a cero
             system_commands = get_system_commands()
-            if system_commands:
-                if st.session_state.hibernar:
-                    execute_command(system_commands['hibernate'](0))
-                else:
-                    execute_command(system_commands['shutdown'](0))
+            if system_commands and st.session_state.hibernar:
+                # Solo ejecutar hibernate si estamos en modo hibernación
+                execute_command(system_commands['hibernate'](0))
+            
+            # Limpiar estados
             st.session_state.contador_activo = False
             st.session_state.tiempo_final = None
             st.session_state.hibernar = False
-            return '00:00'
-    return '--:--'
+            return '00:00', 0
+    return '--:--', -1
 
 # Segunda fila: Botones de acción
 col1, col2 = st.columns([2,1])
@@ -420,22 +420,28 @@ with col1:
             system_commands = get_system_commands()
             if not system_commands:
                 st.error(t["error_system_not_supported"])
-            elif accion == t["shutdown"]:
-                if execute_command(system_commands['shutdown'](segundos)):
-                    mensaje = t["shutdown"].lower()
-                    icono = '📴'
-                    st.session_state.tiempo_final = datetime.now() + timedelta(minutes=tiempo)
-                    st.session_state.contador_activo = True
-                    st.success(f'{icono} {t["system_scheduled"].format(mensaje, tiempo)}')
             else:
-                st.session_state.hibernar = True
-                st.session_state.tiempo_hibernar = segundos
-                mensaje = t["hibernate"].lower()
-                icono = '💤'
-            
-            st.session_state.tiempo_final = datetime.now() + timedelta(minutes=tiempo)
-            st.session_state.contador_activo = True
-            st.success(f'{icono} {t["system_scheduled"].format(mensaje, tiempo)}')
+                st.session_state.hibernar = (accion == t["hibernate"])
+                mensaje = accion.lower()
+                icono = '💤' if st.session_state.hibernar else '🔜'
+                
+                # Configurar el temporizador primero
+                st.session_state.tiempo_final = datetime.now() + timedelta(minutes=tiempo)
+                st.session_state.contador_activo = True
+                
+                if not st.session_state.hibernar:
+                    # Para apagado, ejecutar comando inmediatamente
+                    if not execute_command(system_commands['shutdown'](segundos)):
+                        st.error(t["error_executing_command"])
+                        st.session_state.contador_activo = False
+                        st.session_state.tiempo_final = None
+                        st.session_state.hibernar = False
+                    else:
+                        st.success(f'{icono} {t["system_scheduled"].format(mensaje, tiempo)}')
+                else:
+                    # Para hibernación, solo guardar el tiempo
+                    st.session_state.tiempo_hibernar = segundos
+                    st.success(f'{icono} {t["system_scheduled"].format(mensaje, tiempo)}')
 
     with botones_col2:
         if st.button(t["cancel_operation"], type='secondary'):
