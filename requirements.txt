@@ -1,29 +1,15 @@
 # Core dependencies
-streamlit==1.32.0
+streamlit==1.31.1
 python-dateutil==2.8.2
-typing-extensions==4.10.0
 
 # Security dependencies
-python-dotenv==1.0.1
-streamlit-authenticator==0.3.1
+python-dotenv==1.0.0
+streamlit-authenticator==0.2.3
 cryptography==42.0.5
 pyOpenSSL==24.0.0
-passlib==1.7.4
-bcrypt==4.1.2
-
-# Rate limiting and protection
-streamlit-rate-limit==0.1.5
-streamlit-security==0.1.2
 
 # Logging and monitoring
-logging==0.4.9.6
 watchdog==3.0.0
-streamlit-analytics==0.4.1
 
 # UI/UX improvements
 streamlit-option-menu==0.3.12
-streamlit-custom-notification==0.1.1
-
-# Performance optimization
-cachetools==5.3.3
-streamlit-cache-manager==0.1.2
