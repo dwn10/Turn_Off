@@ -96,12 +96,12 @@ TRANSLATIONS = {
         'devices_description': '''<div class="device-list">
             <p><strong>Esta aplicación es compatible con:</strong></p>
             <ul>
-                <li>💻 Computadoras de escritorio (Windows)</li>
-                <li>💻 Laptops y notebooks</li>
-                <li>💻 Tablets con Windows</li>
-                <li>💻 Servidores Windows</li>
+                <li>💻 Windows: PC, Laptops, Tablets (10/11)</li>
+                <li>🖥 macOS: iMac, MacBook, Mac mini</li>
+                <li>🐧 Linux: Ubuntu, Debian, Fedora, etc.</li>
+                <li>💻 Servidores: Windows Server, Linux Server</li>
             </ul>
-            <p class="note"><em>⚠️ Nota: No compatible con móviles Android/iOS</em></p>
+            <p class="note"><em>⚠️ Nota: No compatible con dispositivos móviles (Android/iOS)</em></p>
         </div>'''
     },
     'English': {
@@ -127,12 +127,12 @@ TRANSLATIONS = {
         'devices_description': '''<div class="device-list">
             <p><strong>This application is compatible with:</strong></p>
             <ul>
-                <li>💻 Desktop computers (Windows)</li>
-                <li>💻 Laptops and notebooks</li>
-                <li>💻 Windows tablets</li>
-                <li>💻 Windows servers</li>
+                <li>💻 Windows: PC, Laptops, Tablets (10/11)</li>
+                <li>🖥 macOS: iMac, MacBook, Mac mini</li>
+                <li>🐧 Linux: Ubuntu, Debian, Fedora, etc.</li>
+                <li>💻 Servers: Windows Server, Linux Server</li>
             </ul>
-            <p class="note"><em>⚠️ Note: Not compatible with Android/iOS mobile devices</em></p>
+            <p class="note"><em>⚠️ Note: Not compatible with mobile devices (Android/iOS)</em></p>
         </div>'''
     },
     'Deutsch': {
@@ -158,12 +158,12 @@ TRANSLATIONS = {
         'devices_description': '''<div class="device-list">
             <p><strong>Diese Anwendung ist kompatibel mit:</strong></p>
             <ul>
-                <li>💻 Desktop-Computer (Windows)</li>
-                <li>💻 Laptops und Notebooks</li>
-                <li>💻 Windows-Tablets</li>
-                <li>💻 Windows-Server</li>
+                <li>💻 Windows: PC, Laptops, Tablets (10/11)</li>
+                <li>🖥 macOS: iMac, MacBook, Mac mini</li>
+                <li>🐧 Linux: Ubuntu, Debian, Fedora, etc.</li>
+                <li>💻 Server: Windows Server, Linux Server</li>
             </ul>
-            <p class="note"><em>⚠️ Hinweis: Nicht kompatibel mit Android/iOS-Mobilgeräten</em></p>
+            <p class="note"><em>⚠️ Hinweis: Nicht kompatibel mit Mobilgeräten (Android/iOS)</em></p>
         </div>'''
     }
 }
