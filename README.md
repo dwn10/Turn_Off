@@ -45,17 +45,16 @@ Power Manager transforma los comandos de sistema tradicionales en una experienci
 ## 🌐 Alcance y Compatibilidad
 
 ### Dispositivos Soportados
-- **PC de Escritorio**: Windows 10/11
-- **Laptops**: Windows 10/11
-- **Tablets**: Windows 10/11 (versión completa, no Windows RT)
-- **Servidores**: Windows Server 2016 o superior
+- **PC de Escritorio**: Windows, macOS, Linux
+- **Laptops**: Windows, macOS, Linux
+- **Tablets**: Windows 10/11 (versión completa)
+- **Servidores**: Windows Server, Linux Server
 
 ### Dispositivos No Soportados
-- Dispositivos macOS
-- Dispositivos Linux
 - Dispositivos móviles (Android/iOS)
 - Tablets con Windows RT
 - Consolas de videojuegos
+- Sistemas operativos no estándar
 
 ### Casos de Uso
 - **Entorno Doméstico**: Programar el apagado de PC después de descargas o actualizaciones
@@ -65,7 +64,7 @@ Power Manager transforma los comandos de sistema tradicionales en una experienci
 
 ### Limitaciones
 - Requiere permisos de administrador
-- Solo funciona en sistemas Windows
+- Algunas funciones pueden variar según el sistema operativo
 - No soporta programación recurrente
 - No guarda historial de operaciones
 
@@ -93,7 +92,7 @@ Power Manager transforma los comandos de sistema tradicionales en una experienci
 ## 📍 Requisitos
 
 - Python 3.8 o superior
-- Windows 10/11
+- Windows 10/11, macOS, o Linux
 - Permisos de administrador para ejecutar comandos de sistema
 
 ## 💾 Instalación

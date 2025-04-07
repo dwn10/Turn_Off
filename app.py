@@ -10,13 +10,53 @@
 import streamlit as st
 import subprocess
 import time
+import platform
 from datetime import datetime, timedelta
+
+def get_system_commands():
+    """Obtener comandos específicos del sistema operativo."""
+    system = platform.system().lower()
+    
+    if system == 'windows':
+        return {
+            'shutdown': lambda t: f'shutdown /s /t {t}',
+            'hibernate': lambda _: 'shutdown /h',
+            'cancel': 'shutdown /a'
+        }
+    elif system == 'linux':
+        return {
+            'shutdown': lambda t: f'shutdown -h +{t//60}',
+            'hibernate': lambda _: 'systemctl hibernate',
+            'cancel': 'shutdown -c'
+        }
+    elif system == 'darwin':  # macOS
+        return {
+            'shutdown': lambda t: f'shutdown -h +{t//60}',
+            'hibernate': lambda _: 'pmset sleepnow',
+            'cancel': 'killall shutdown'
+        }
+    else:
+        st.error(f'Sistema operativo no soportado: {system}')
+        return None
+
+def execute_command(cmd):
+    """Ejecutar comando con manejo de errores."""
+    try:
+        subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+        return True
+    except subprocess.CalledProcessError as e:
+        st.error(f'Error al ejecutar el comando: {e.stderr}')
+        return False
+    except OSError as e:
+        st.error(f'Error del sistema: {str(e)}')
+        return False
 
 # Diccionario de traducciones
 TRANSLATIONS = {
     'Español': {
         'title': 'Power Manager',
         'description': 'Gestiona el apagado o hibernación de tu sistema de forma elegante',
+        'error_system_not_supported': 'Sistema operativo no soportado. Por favor, verifica la compatibilidad.',
         'timer_label': 'Temporizador',
         'select_time': 'Selecciona el tiempo en minutos',
         'mode_label': 'Modo',
@@ -47,6 +87,7 @@ TRANSLATIONS = {
     'English': {
         'title': 'Power Manager',
         'description': 'Manage your system shutdown or hibernation elegantly',
+        'error_system_not_supported': 'Operating system not supported. Please check compatibility.',
         'timer_label': 'Timer',
         'select_time': 'Select time in minutes',
         'mode_label': 'Mode',
@@ -77,6 +118,7 @@ TRANSLATIONS = {
     'Deutsch': {
         'title': 'Power Manager',
         'description': 'Verwalten Sie das Herunterfahren oder den Ruhezustand Ihres Systems elegant',
+        'error_system_not_supported': 'Betriebssystem nicht unterstützt. Bitte überprüfen Sie die Kompatibilität.',
         'timer_label': 'Timer',
         'select_time': 'Zeit in Minuten auswählen',
         'mode_label': 'Modus',
@@ -327,9 +369,9 @@ def actualizar_contador():
     if st.session_state.tiempo_final:
         tiempo_restante = st.session_state.tiempo_final - datetime.now()
         if tiempo_restante.total_seconds() > 0:
-            minutos = int(tiempo_restante.total_seconds() // 60)
-            segundos = int(tiempo_restante.total_seconds() % 60)
-            return f'{minutos:02d}:{segundos:02d}'
+            mins = int(tiempo_restante.total_seconds() // 60)
+            secs = int(tiempo_restante.total_seconds() % 60)
+            return f'{mins:02d}:{secs:02d}'
         else:
             st.session_state.contador_activo = False
             return '00:00'
@@ -346,10 +388,16 @@ with col1:
         start = st.button(t["start_timer"], type='primary')
         if start:
             segundos = tiempo * 60
-            if accion == t["shutdown"]:
-                subprocess.call(f'shutdown /s /t {segundos}')
-                mensaje = t["shutdown"].lower()
-                icono = '📴'
+            system_commands = get_system_commands()
+            if not system_commands:
+                st.error(t["error_system_not_supported"])
+            elif accion == t["shutdown"]:
+                if execute_command(system_commands['shutdown'](segundos)):
+                    mensaje = t["shutdown"].lower()
+                    icono = '📴'
+                    st.session_state.tiempo_final = datetime.now() + timedelta(minutes=tiempo)
+                    st.session_state.contador_activo = True
+                    st.success(f'{icono} {t["system_scheduled"].format(mensaje, tiempo)}')
             else:
                 st.session_state.hibernar = True
                 st.session_state.tiempo_hibernar = segundos
@@ -362,11 +410,12 @@ with col1:
 
     with botones_col2:
         if st.button(t["cancel_operation"], type='secondary'):
-            subprocess.call('shutdown /a')
-            st.session_state.contador_activo = False
-            st.session_state.tiempo_final = None
-            st.session_state.hibernar = False
-            st.info(t["operation_cancelled"])
+            system_commands = get_system_commands()
+            if system_commands and execute_command(system_commands['cancel']):
+                st.session_state.contador_activo = False
+                st.session_state.tiempo_final = None
+                st.session_state.hibernar = False
+                st.info(t["operation_cancelled"])
 
 # Inicialización del estado
 if 'hibernar' not in st.session_state:
@@ -397,8 +446,9 @@ if st.session_state.contador_activo:
     
     # Verificar si es tiempo de hibernar
     if st.session_state.hibernar and tiempo_actual == '00:00':
-        subprocess.call('shutdown /h')
-        st.session_state.hibernar = False
+        system_commands = get_system_commands()
+        if system_commands and execute_command(system_commands['hibernate'](0)):
+            st.session_state.hibernar = False
     
     time.sleep(1)
     st.rerun()
